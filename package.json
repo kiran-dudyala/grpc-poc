@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
-    "dev": "nodemon ./src/index.ts",
-    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/proto/songs.proto",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run build:typescript",
+    "build:typescript": "tsc -p .",
+    "watch": "npm run build:typescript -- -w",
+    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ proto/posts.proto",
+    "start:server": "node server",
+    "start:client": "node client"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.6.7",
