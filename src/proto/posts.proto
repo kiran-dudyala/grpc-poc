@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package posts_package;
+
+service UserPosts {
+  rpc unaryCall(PostId) returns (Post) {}
+  rpc serverStreamingCall(EmptyParams) returns (stream Posts) {}
+}
+
+message EmptyParams {}
+
+message PostId{
+  int32 id = 1;
+}
+
+message Post{
+  int32 userId = 1;
+  int32 id = 2;
+  string title = 3;
+  string body = 4;
+}
+
+message Posts{
+  repeated Post posts = 1;
+}
