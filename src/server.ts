@@ -1,41 +1,54 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { ProtoGrpcType } from "./proto/posts";
-import { Post } from "./proto/posts_package/Post";
-import { Posts } from "./proto/posts_package/Posts";
-import { PostId } from "./proto/posts_package/PostId";
-import { EmptyParams } from "./proto/posts_package/EmptyParams";
-import { UserPostsHandlers } from "./proto/posts_package/UserPosts";
+import { ProtoGrpcType } from "./proto/blog";
+import { ClientMessage } from "./proto/blog_package/ClientMessage";
+import { EmptyParams } from "./proto/blog_package/EmptyParams";
+import { BlogHandlers } from "./proto/blog_package/Blog";
+import { ServerMessage } from "./proto/blog_package/ServerMessage";
+import axios from "axios";
 
 const host = "0.0.0.0:9090";
 
-const blogServer: UserPostsHandlers = {
+const blogServer: BlogHandlers = {
   unaryCall(
-    call: grpc.ServerUnaryCall<PostId, Post>,
-    callback: grpc.sendUnaryData<Post>
+    call: grpc.ServerUnaryCall<ClientMessage, ServerMessage>,
+    callback: grpc.sendUnaryData<ServerMessage>
   ) {
     if (call.request) {
-      // incoming client call, todo: maybe capture for future analytics
+      console.log(`(server) Got client message: ${call.request.id}`);
     }
-    //callback(null, {Post});
+    // fetch data from the API
+    axios
+      .get<ServerMessage>(
+        `https://jsonplaceholder.typicode.com/posts/${call.request.id}`
+      )
+      .then((respose) => {
+        callback(null, respose.data);
+      });
   },
-  serverStreamingCall(call: grpc.ServerWritableStream<EmptyParams, Posts>) {
-    //call.write({Posts})
+  serverStreamingCall(
+    call: grpc.ServerWritableStream<EmptyParams, ServerMessage>
+  ) {
+    axios
+      .get<ServerMessage[]>("https://jsonplaceholder.typicode.com/posts")
+      .then((respose) => {
+        respose.data.forEach((item) => call.write(item));
+      });
   },
 };
 
-const loadServer = () => {
-  const packageDefinition = protoLoader.loadSync("'./proto/posts.proto");
+function getServer(): grpc.Server {
+  const packageDefinition = protoLoader.loadSync("./proto/blog.proto");
   const proto = grpc.loadPackageDefinition(
     packageDefinition
   ) as unknown as ProtoGrpcType;
   const server = new grpc.Server();
-  server.addService(proto.posts_package.UserPosts.service, blogServer);
+  server.addService(proto.blog_package.Blog.service, blogServer);
   return server;
-};
+}
 
 if (require.main === module) {
-  const server = loadServer();
+  const server = getServer();
   server.bindAsync(
     host,
     grpc.ServerCredentials.createInsecure(),

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package blog_package;
+
+message ServerMessage {
+  int32 userId =1;
+  int32 id =2;
+  string title =3;
+  string body =4;
+
+}
+
+message ClientMessage {
+  int32 id = 1;
+}
+
+message EmptyParams {}
+
+message ServerMessageList{
+  repeated ServerMessage serverMessageList = 1;
+}
+
+service Blog {
+  rpc unaryCall(ClientMessage) returns (ServerMessage) {}
+  rpc serverStreamingCall(EmptyParams) returns (stream ServerMessage) {}
+}

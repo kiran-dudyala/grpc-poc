@@ -1,31 +1,21 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { ProtoGrpcType } from "./proto/posts";
-import { Post } from "./proto/posts_package/Post";
-import { Posts } from "./proto/posts_package/Posts";
-import { PostId } from "./proto/posts_package/PostId";
-import { EmptyParams } from "./proto/posts_package/EmptyParams";
-import { UserPostsHandlers } from "./proto/posts_package/UserPosts";
+import { ProtoGrpcType } from "./proto/blog";
+import { ServerMessage } from "./proto/blog_package/serverMessage";
 
 const host = "0.0.0.0:9090";
-
-const packageDefinition = protoLoader.loadSync("./proto/posts.proto");
-
+const packageDefinition = protoLoader.loadSync("./proto/blog.proto");
 const proto = grpc.loadPackageDefinition(
   packageDefinition
 ) as unknown as ProtoGrpcType;
 
-// TODO: this needs to be secure in production.
-const client = new proto.posts_package.UserPosts(
+const client = new proto.blog_package.Blog(
   host,
   grpc.credentials.createInsecure()
 );
 
-// ping the server
 const deadline = new Date();
-
 deadline.setSeconds(deadline.getSeconds() + 5);
-
 client.waitForReady(deadline, (error?: Error) => {
   if (error) {
     console.log(`Client connect error: ${error.message}`);
@@ -35,6 +25,7 @@ client.waitForReady(deadline, (error?: Error) => {
 });
 
 function onClientReady() {
+  console.log(process.argv);
   switch (process.argv[process.argv.length - 1]) {
     case "--unary":
       doUnaryCall();
@@ -43,23 +34,21 @@ function onClientReady() {
       doServerStreamingCall();
       break;
     default:
-      throw new Error("Example not specified");
+      throw new Error("Service not specified");
   }
 }
 
 function doUnaryCall() {
   client.unaryCall(
     {
-      id: 2,
+      id: 22,
     },
-    (error?: grpc.ServiceError, post: {
-
-    }) => {
+    (error?: grpc.ServiceError | null, serverMessage?: ServerMessage) => {
       if (error) {
         console.error(error.message);
-      } else if (post) {
+      } else if (serverMessage) {
         console.log(
-          `(client) Got server message: ${post}`
+          `(client) Got server message: ${JSON.stringify(serverMessage)}`
         );
       }
     }
@@ -71,6 +60,6 @@ function doServerStreamingCall() {
     clientMessage: "Message from client",
   });
   stream.on("data", (serverMessage: ServerMessage) => {
-    console.log(`(client) Got server message: ${serverMessage.serverMessage}`);
+    console.log(`(client) Got server message: ${JSON.stringify(serverMessage)}`);
   });
 }
