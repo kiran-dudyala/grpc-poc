@@ -7,13 +7,14 @@
     "build": "npm run build:typescript",
     "build:typescript": "tsc -p .",
     "watch": "npm run build:typescript -- -w",
-    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ proto/posts.proto",
+    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ proto/blog.proto",
     "start:server": "node server",
     "start:client": "node client"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.6.7",
-    "@grpc/proto-loader": "^0.6.13"
+    "@grpc/proto-loader": "^0.6.13",
+    "axios": "^0.27.2"
   },
   "author": "Kiran Dudyala",
   "license": "ISC",

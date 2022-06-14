@@ -25,10 +25,9 @@ client.waitForReady(deadline, (error?: Error) => {
 });
 
 function onClientReady() {
-  console.log(process.argv);
-  switch (process.argv[process.argv.length - 1]) {
+  switch (process.argv[process.argv.length - 2]) {
     case "--unary":
-      doUnaryCall();
+      doUnaryCall(+process.argv[process.argv.length - 1]);
       break;
     case "--server-streaming":
       doServerStreamingCall();
@@ -38,10 +37,10 @@ function onClientReady() {
   }
 }
 
-function doUnaryCall() {
+function doUnaryCall(userId: number) {
   client.unaryCall(
     {
-      id: 22,
+      id: userId,
     },
     (error?: grpc.ServiceError | null, serverMessage?: ServerMessage) => {
       if (error) {
