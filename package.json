@@ -7,7 +7,7 @@
     "build": "npm run build:typescript",
     "build:typescript": "tsc -p .",
     "watch": "npm run build:typescript -- -w",
-    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ proto/blog.proto",
+    "build:proto": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/proto/ src/proto/blog.proto",
     "start:server": "node server",
     "start:client": "node client"
   },

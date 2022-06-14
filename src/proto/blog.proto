@@ -16,10 +16,6 @@ message ClientMessage {
 
 message EmptyParams {}
 
-message ServerMessageList{
-  repeated ServerMessage serverMessageList = 1;
-}
-
 service Blog {
   rpc unaryCall(ClientMessage) returns (ServerMessage) {}
   rpc serverStreamingCall(EmptyParams) returns (stream ServerMessage) {}
