@@ -14,7 +14,7 @@ ServerStreamingCall = client sending a request (id, object or void) and server r
 
 `node client --unary 23` to start the client with unary (takes 2 params [name, id])
 
-`node client --server-streaming` to start the client with server streaming
+`node client --server-streaming null` to start the client with server streaming (takes 2 params [name, null])
 
 ## TODO
 
